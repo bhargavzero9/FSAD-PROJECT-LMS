@@ -15,11 +15,12 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList(
-            "http://localhost:5173", "http://localhost:5174",
-            "http://localhost:3000", "http://localhost:4173",
-            "http://10.150.160.128:5173", "http://127.0.0.1:5173",
-            "http://127.0.0.1:5174"
+        config.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:*",
+            "http://127.0.0.1:*",
+            "http://10.150.160.128:*",
+            "https://*.netlify.app",
+            "https://*.onrender.com"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
