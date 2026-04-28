@@ -14,6 +14,6 @@ COPY --from=build /app/target/*.jar app.jar
 # Create uploads directory
 RUN mkdir -p /app/uploads
 
-EXPOSE 5000
+EXPOSE 10000
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -6,10 +6,29 @@ services:
     dockerfilePath: ./Dockerfile
     envVars:
       - key: PORT
-        value: 5000
+        value: 10000
       - key: SPRING_DATASOURCE_URL
         sync: false
       - key: SPRING_DATASOURCE_USERNAME
         sync: false
       - key: SPRING_DATASOURCE_PASSWORD
         sync: false
+      - key: SPRING_MAIL_HOST
+        value: smtp.gmail.com
+      - key: SPRING_MAIL_PORT
+        value: 587
+      - key: SPRING_MAIL_USERNAME
+        sync: false
+      - key: SPRING_MAIL_PASSWORD
+        sync: false
+      - key: SPRING_MAIL_SMTP_AUTH
+        value: "true"
+      - key: SPRING_MAIL_SMTP_STARTTLS
+        value: "true"
+      - key: SPRING_MAIL_DEBUG
+        value: "false"
+    healthCheck:
+      path: /actuator/health
+      intervalSeconds: 10
+      timeoutSeconds: 30
+      gracePeriodSeconds: 180
