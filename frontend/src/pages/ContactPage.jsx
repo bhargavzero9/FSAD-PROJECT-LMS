@@ -13,36 +13,36 @@ export default function ContactPage() {
                 </div>
             </div>
 
-            <div className="grid-2" style={{ marginTop: 20, gap: 24 }}>
-                <div className="card" style={{ textAlign: 'center', padding: 40 }}>
-                    <div style={{ width: 64, height: 64, margin: '0 auto 20px', borderRadius: '50%', background: 'rgba(16,185,129,0.15)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Phone size={28} />
+            <div className="grid-3" style={{ marginTop: 24 }}>
+                <div className="card" style={{ textAlign: 'center', padding: 32 }}>
+                    <div style={{ width: 56, height: 56, margin: '0 auto 20px', borderRadius: '50%', background: 'rgba(108,99,255,0.12)', color: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Phone size={24} />
                     </div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Call Us</div>
-                    <div style={{ fontSize: 15, color: 'var(--text-secondary)' }}>{platformSettings.contactPhone}</div>
+                    <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Call Us</div>
+                    <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{platformSettings.contactPhone}</div>
                 </div>
 
-                <div className="card" style={{ textAlign: 'center', padding: 40 }}>
-                    <div style={{ width: 64, height: 64, margin: '0 auto 20px', borderRadius: '50%', background: 'rgba(245,158,11,0.15)', color: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Mail size={28} />
+                <div className="card" style={{ textAlign: 'center', padding: 32 }}>
+                    <div style={{ width: 56, height: 56, margin: '0 auto 20px', borderRadius: '50%', background: 'rgba(108,99,255,0.12)', color: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Mail size={24} />
                     </div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Email Us</div>
-                    <div style={{ fontSize: 15, color: 'var(--text-secondary)' }}>
+                    <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Email Us</div>
+                    <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
                         <a href={`mailto:${platformSettings.contactEmail}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                             {platformSettings.contactEmail}
                         </a>
                     </div>
                 </div>
-            </div>
 
-            <div className="card" style={{ marginTop: 24, padding: 40, textAlign: 'center' }}>
-                <div style={{ width: 64, height: 64, margin: '0 auto 20px', borderRadius: '50%', background: 'rgba(108,99,255,0.15)', color: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <MapPin size={28} />
-                </div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Headquarters</div>
-                <div style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                    KLEF Vaddeswaram,<br />
-                    Guntur district, Andhra Pradesh
+                <div className="card" style={{ textAlign: 'center', padding: 32 }}>
+                    <div style={{ width: 56, height: 56, margin: '0 auto 20px', borderRadius: '50%', background: 'rgba(108,99,255,0.12)', color: 'var(--primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <MapPin size={24} />
+                    </div>
+                    <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>Headquarters</div>
+                    <div style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                        KLEF Vaddeswaram,<br />
+                        Guntur, AP
+                    </div>
                 </div>
             </div>
         </div>

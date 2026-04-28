@@ -57,6 +57,7 @@ export default function SignupPage({ onSignup, onGoLogin }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
+    const [successMsg, setSuccessMsg] = useState('');
 
     const setField = (field) => (e) => { setForm(f => ({ ...f, [field]: e.target.value })); setError(''); };
 
@@ -76,12 +77,17 @@ export default function SignupPage({ onSignup, onGoLogin }) {
         const err = validate();
         if (err) { setError(err); return; }
         setLoading(true);
-        await new Promise(r => setTimeout(r, 800));
-        const result = register({ name: form.name, email: form.email, password: form.password, role: selectedRole }, users);
+        const result = await register({ name: form.name, email: form.email, password: form.password, role: selectedRole });
         setLoading(false);
         if (result.error) { setError(result.error); return; }
-        setSuccess(true);
-        setTimeout(() => onSignup(), 1400);
+        
+        if (result.message) {
+            setSuccessMsg(result.message);
+            setSuccess(true);
+        } else {
+            setSuccess(true);
+            setTimeout(() => onSignup(), 1400);
+        }
     };
 
     if (success) {
@@ -92,14 +98,20 @@ export default function SignupPage({ onSignup, onGoLogin }) {
                     <div style={{ width: 72, height: 72, background: 'rgba(16,185,129,0.15)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }} className="animate-glow">
                         <CheckCircle size={36} style={{ color: '#34d399' }} />
                     </div>
-                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>Account Created! 🎉</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 6 }}>
-                        Welcome, <strong style={{ color: 'var(--text-primary)' }}>{form.name}</strong>!
+                    <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>{successMsg ? 'Verify Your Email' : 'Account Created! 🎉'}</h2>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 16 }}>
+                        {successMsg || `Welcome, ${form.name}! Redirecting to your dashboard…`}
                     </p>
-                    <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>Redirecting to your dashboard…</p>
-                    <div style={{ marginTop: 20 }}>
-                        <span style={{ width: 20, height: 20, border: '2px solid rgba(52,211,153,0.4)', borderTopColor: '#34d399', borderRadius: '50%', animation: 'spin 0.8s linear infinite', display: 'inline-block' }} />
-                    </div>
+                    
+                    {successMsg ? (
+                        <button onClick={onGoLogin} className="btn btn-primary" style={{ margin: '0 auto' }}>
+                           Proceed to Login 
+                        </button>
+                    ) : (
+                        <div style={{ marginTop: 20 }}>
+                            <span style={{ width: 20, height: 20, border: '2px solid rgba(52,211,153,0.4)', borderTopColor: '#34d399', borderRadius: '50%', animation: 'spin 0.8s linear infinite', display: 'inline-block' }} />
+                        </div>
+                    )}
                 </div>
             </div>
         );

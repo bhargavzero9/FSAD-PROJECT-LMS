@@ -1,16 +1,122 @@
-# React + Vite
+# FSAD-PROJECT-LMS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack **Learning Management System (LMS)** — *Digital Blackboard* — built with a **Spring Boot** backend and a **React (Vite)** frontend.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🏗️ Tech Stack
 
-## React Compiler
+| Layer     | Technology                              |
+|-----------|----------------------------------------|
+| Frontend  | React 19, Vite, Axios, React Router    |
+| Backend   | Spring Boot 3.2, Spring Data JPA, Lombok |
+| Database  | MySQL 8                                |
+| Email     | Spring Mail (Gmail SMTP)               |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 📁 Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+FSAD-PROJECT-LMS/
+├── backend-spring/          # Spring Boot REST API
+│   ├── src/main/java/com/dbb/
+│   │   ├── config/          # CORS, app configuration
+│   │   ├── controller/      # REST controllers
+│   │   ├── entity/          # JPA entities
+│   │   ├── repository/      # Spring Data repositories
+│   │   └── DigitalBlackBoardApplication.java
+│   ├── src/main/resources/
+│   │   ├── application.properties
+│   │   └── data.sql         # Seed data
+│   └── pom.xml
+├── frontend/                # React Vite app
+│   ├── src/
+│   │   ├── components/      # Reusable UI components
+│   │   ├── context/         # React context providers
+│   │   ├── pages/           # Route pages
+│   │   └── utils/           # API service layer
+│   ├── index.html
+│   └── vite.config.js
+└── README.md
+```
+
+---
+
+## ⚙️ Prerequisites
+
+- **Java 17+**
+- **Maven 3.9+**
+- **Node.js 18+** & npm
+- **MySQL 8** running on `localhost:3306`
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/bhargavzero9/FSAD-PROJECT-LMS.git
+cd FSAD-PROJECT-LMS
+```
+
+### 2. Configure the database
+
+Edit `backend-spring/src/main/resources/application.properties`:
+
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/dbb_lms_gmail?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=YOUR_PASSWORD
+```
+
+> The database `dbb_lms_gmail` will be created automatically on first run.
+
+### 3. Start the backend
+
+```bash
+cd backend-spring
+./mvnw.cmd spring-boot:run      # Windows
+# or
+./mvnw spring-boot:run          # macOS / Linux
+```
+
+Backend starts at **http://localhost:5000**
+
+### 4. Start the frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend starts at **http://localhost:5174**
+
+---
+
+## 📬 Email Verification
+
+The LMS supports real email verification via Gmail SMTP. Configure your app password in `application.properties`:
+
+```properties
+spring.mail.username=your-email@gmail.com
+spring.mail.password=your-app-password
+```
+
+---
+
+## 👥 Default Roles
+
+| Role             | Description                        |
+|------------------|------------------------------------|
+| ADMIN            | Full platform management           |
+| CONTENT_CREATOR  | Create and manage courses/content  |
+| STUDENT          | Enroll in courses, submit work     |
+
+---
+
+## 📄 License
+
+This project is for academic/educational purposes (FSAD coursework).

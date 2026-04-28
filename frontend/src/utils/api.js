@@ -148,5 +148,10 @@ export const apiDeleteMessage = (id, asSender = false) =>
 // ── Health ──────────────────────────────────────────────────────────────────
 export const apiHealthCheck = () => request('/health');
 
+// ── Platform Settings ───────────────────────────────────────────────────────
+export const apiGetPlatformSettings = () => request('/platform-settings');
+export const apiUpdatePlatformSettings = (updates) =>
+  request('/platform-settings', { method: 'PUT', body: JSON.stringify(updates) });
+
 // File URL helper — works both locally and in production
 export const getFileUrl = (relativePath) => `${SERVER_BASE}${relativePath}`;

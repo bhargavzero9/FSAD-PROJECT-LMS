@@ -66,10 +66,18 @@ function NotifIcon({ text }) {
 
 // ── Main header ───────────────────────────────────────────────────────────────
 export default function TopHeader({ activePage, setActivePage, searchQuery, setSearchQuery }) {
-    const { currentUser, notifications, setNotifications } = useApp();
+    const { currentUser, notifications, setNotifications, users, courses, announcements } = useApp();
     const [showNotifs, setShowNotifs] = useState(false);
+    const [showResults, setShowResults] = useState(false);
     const notifRef = useRef(null);
+    const searchRef = useRef(null);
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+    const filteredResults = {
+        courses: courses.filter(c => c.title.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5),
+        users: users.filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5),
+        announcements: announcements.filter(a => a.title.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
+    };
 
     const myNotifications = notifications.filter(n => !n.targetRoles || n.targetRoles.includes(currentUser.role));
     const unread = myNotifications.filter(n => !n.read).length;
@@ -89,6 +97,7 @@ export default function TopHeader({ activePage, setActivePage, searchQuery, setS
     useEffect(() => {
         const handler = (e) => {
             if (notifRef.current && !notifRef.current.contains(e.target)) setShowNotifs(false);
+            if (searchRef.current && !searchRef.current.contains(e.target)) setShowResults(false);
         };
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
@@ -116,28 +125,74 @@ export default function TopHeader({ activePage, setActivePage, searchQuery, setS
             <ToastContainer />
             <header className="top-header">
                 <div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
                         {pageLabels[activePage] || 'Dashboard'}
-                    </div>
-                    <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 1 }}>
-                        Welcome back, {currentUser.name} 👋
                     </div>
                 </div>
 
                 {/* Search */}
-                <div className="search-bar" style={{ marginLeft: 'auto' }}>
+                <div className="search-bar" ref={searchRef} style={{ marginLeft: 'auto', position: 'relative' }}>
                     <Search size={15} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
                     <input
-                        placeholder="Search courses, users..."
+                        placeholder="Search courses, users, announcements..."
                         value={searchQuery}
-                        onChange={e => {
-                            const val = e.target.value;
-                            setSearchQuery(val);
-                            if (val && !['courses', 'my-courses', 'users', 'students', 'assignments'].includes(activePage)) {
-                                setActivePage('courses');
-                            }
-                        }}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        onFocus={() => setShowResults(true)}
                     />
+                    
+                    {/* Search Results Dropdown */}
+                    {showResults && searchQuery.trim().length > 0 && (
+                        <div className="dropdown-menu" style={{ 
+                            position: 'absolute', top: '100%', left: 0, right: 0, 
+                            marginTop: 8, width: '100%', minWidth: 280, 
+                            maxHeight: 400, overflowY: 'auto', zIndex: 1000 
+                        }}>
+                            {/* Courses */}
+                            {filteredResults.courses.length > 0 && (
+                                <div style={{ padding: '8px 12px', fontSize: 11, fontWeight: 700, color: 'var(--primary-light)', textTransform: 'uppercase', letterSpacing: 0.5, background: 'rgba(0,0,0,0.05)' }}>
+                                    Courses
+                                </div>
+                            )}
+                            {filteredResults.courses.map(c => (
+                                <div key={c.id} className="dropdown-item" onMouseDown={() => { setActivePage('courses'); setSearchQuery(c.title); setShowResults(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <BookOpen size={14} style={{ opacity: 0.5 }} />
+                                    <span>{c.title}</span>
+                                </div>
+                            ))}
+
+                            {/* Users */}
+                            {filteredResults.users.length > 0 && (
+                                <div style={{ padding: '8px 12px', fontSize: 11, fontWeight: 700, color: 'var(--primary-light)', textTransform: 'uppercase', letterSpacing: 0.5, borderTop: '1px solid var(--border-light)', background: 'rgba(0,0,0,0.05)' }}>
+                                    Users
+                                </div>
+                            )}
+                            {filteredResults.users.map(u => (
+                                <div key={u.id} className="dropdown-item" onMouseDown={() => { setActivePage('users'); setSearchQuery(u.name); setShowResults(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <Users size={14} style={{ opacity: 0.5 }} />
+                                    <span>{u.name} <small style={{ opacity: 0.5, marginLeft: 4 }}>({u.role})</small></span>
+                                </div>
+                            ))}
+
+                            {/* Announcements */}
+                            {filteredResults.announcements.length > 0 && (
+                                <div style={{ padding: '8px 12px', fontSize: 11, fontWeight: 700, color: 'var(--primary-light)', textTransform: 'uppercase', letterSpacing: 0.5, borderTop: '1px solid var(--border-light)', background: 'rgba(0,0,0,0.05)' }}>
+                                    Announcements
+                                </div>
+                            )}
+                            {filteredResults.announcements.map(a => (
+                                <div key={a.id} className="dropdown-item" onMouseDown={() => { setActivePage('announcements'); setSearchQuery(a.title); setShowResults(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                                    <Megaphone size={14} style={{ opacity: 0.5 }} />
+                                    <span>{a.title}</span>
+                                </div>
+                            ))}
+
+                            {filteredResults.courses.length === 0 && filteredResults.users.length === 0 && filteredResults.announcements.length === 0 && (
+                                <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13 }}>
+                                    No results found for "{searchQuery}"
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <div className="header-actions">

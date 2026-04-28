@@ -19,8 +19,8 @@
   --bg-card-hover: #1f2340;
   --bg-elevated: #21254a;
 
-  --border: rgba(249, 115, 22, 0.4);
-  --border-light: rgba(255, 255, 255, 0.08);
+  --border: rgba(249, 115, 22, 0.6);
+  --border-light: rgba(255, 255, 255, 0.15);
 
   --text-primary: #f0f0ff;
   --text-secondary: #a0a3c4;
@@ -49,8 +49,8 @@
   --bg-card-hover: #f8fafc;
   --bg-elevated: #e2e8f0;
 
-  --border: rgba(249, 115, 22, 0.5);
-  --border-light: rgba(0, 0, 0, 0.1);
+  --border: rgba(249, 115, 22, 0.7);
+  --border-light: rgba(0, 0, 0, 0.12);
 
   --text-primary: #0f172a;
   --text-secondary: #334155;
@@ -267,12 +267,15 @@ body {
   border-radius: var(--radius-lg);
   padding: 24px;
   transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
 }
 
 .card:hover {
   background: var(--bg-card-hover);
-  border-color: var(--border);
-  transform: translateY(-2px);
+  border-color: var(--primary-light);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-md);
 }
 
@@ -637,11 +640,11 @@ tbody td:first-child {
 }
 
 .sidebar-logo {
-  padding: 24px 20px;
+  padding: 30px 24px;
   border-bottom: 1px solid var(--border-light);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 15px;
 }
 
 .sidebar-logo-icon {
@@ -743,14 +746,19 @@ tbody td:first-child {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background var(--transition);
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  transition: all var(--transition);
 }
 
 .sidebar-user:hover {
-  background: var(--bg-elevated);
+  background: var(--bg-card-hover);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-user-info {
@@ -759,8 +767,8 @@ tbody td:first-child {
 }
 
 .sidebar-user-name {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -769,21 +777,23 @@ tbody td:first-child {
 
 .sidebar-user-role {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--primary-light);
+  font-weight: 600;
 }
 
 /* Top Header */
 .top-header {
   position: sticky;
   top: 0;
-  background: rgba(13, 14, 26, 0.85);
-  backdrop-filter: blur(20px);
+  background: rgba(13, 14, 26, 0.7);
+  backdrop-filter: blur(24px) saturate(180%);
   border-bottom: 1px solid var(--border-light);
-  padding: 16px 32px;
+  padding: 20px 40px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
   z-index: 50;
+  transition: all var(--transition);
 }
 
 [data-theme="light"] .top-header {

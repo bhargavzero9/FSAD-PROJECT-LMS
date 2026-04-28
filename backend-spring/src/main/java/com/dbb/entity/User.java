@@ -29,6 +29,20 @@ public class User {
 
     private String initials = "";
     private String status = "active";
+    private String avatar = "";
+    private String bio = "";
+    private String timezone = "UTC+5:30";
+    private String language = "English";
+
+    @Column(name = "name_changed")
+    @JsonProperty("name_changed")
+    private Boolean nameChanged = false;
+
+    // Notification Preferences
+    private Boolean emailNotifications = true;
+    private Boolean pushNotifications = true;
+    private Boolean weeklyReports = false;
+    private Boolean twoFactor = false;
 
     @Column(name = "joined_date")
     @JsonProperty("joined_date")
@@ -46,11 +60,23 @@ public class User {
     @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "is_verified")
+    @JsonProperty("is_verified")
+    private Boolean isVerified = false;
+
+    @Column(name = "verification_token")
+    @JsonIgnore
+    private String verificationToken;
+
     @PrePersist
     protected void onCreate() {
         if (joinedDate == null) joinedDate = LocalDate.now();
         if (lastActive == null) lastActive = LocalDate.now();
         if (createdAt == null) createdAt = LocalDateTime.now();
+        if (avatar == null) avatar = "";
+        if (bio == null) bio = "";
+        if (timezone == null) timezone = "UTC+5:30";
+        if (language == null) language = "English";
     }
 
     // ── Getters and Setters ─────────────────────────────────────────────────
@@ -78,6 +104,33 @@ public class User {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public String getTimezone() { return timezone; }
+    public void setTimezone(String timezone) { this.timezone = timezone; }
+
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
+
+    public Boolean getNameChanged() { return nameChanged != null && nameChanged; }
+    public void setNameChanged(Boolean nameChanged) { this.nameChanged = nameChanged; }
+
+    public Boolean getEmailNotifications() { return emailNotifications != null && emailNotifications; }
+    public void setEmailNotifications(Boolean emailNotifications) { this.emailNotifications = emailNotifications; }
+
+    public Boolean getPushNotifications() { return pushNotifications != null && pushNotifications; }
+    public void setPushNotifications(Boolean pushNotifications) { this.pushNotifications = pushNotifications; }
+
+    public Boolean getWeeklyReports() { return weeklyReports != null && weeklyReports; }
+    public void setWeeklyReports(Boolean weeklyReports) { this.weeklyReports = weeklyReports; }
+
+    public Boolean getTwoFactor() { return twoFactor != null && twoFactor; }
+    public void setTwoFactor(Boolean twoFactor) { this.twoFactor = twoFactor; }
+
     public LocalDate getJoinedDate() { return joinedDate; }
     public void setJoinedDate(LocalDate joinedDate) { this.joinedDate = joinedDate; }
 
@@ -89,4 +142,10 @@ public class User {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public Boolean isVerified() { return isVerified != null && isVerified; }
+    public void setVerified(Boolean verified) { isVerified = verified; }
+
+    public String getVerificationToken() { return verificationToken; }
+    public void setVerificationToken(String verificationToken) { this.verificationToken = verificationToken; }
 }

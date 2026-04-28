@@ -203,7 +203,7 @@ public class AssignmentController {
                 af.setSize(file.getSize());
                 af.setUploadedBy(uploadedBy);
                 af.setUploadedByName(uploadedByName);
-                af.setUrl("/uploads/assignments/" + uniqueName);
+                af.setUrl("/api/assignments/files/" + uniqueName);
                 fileRepo.save(af);
             }
         } catch (IOException e) {
@@ -238,6 +238,34 @@ public class AssignmentController {
             "message", "File deleted.",
             "assignment", assignment != null ? buildResponse(assignment) : Map.of()
         ));
+    }
+
+    // ── GET /api/assignments/files/{uniqueName} ─────────────────────────────
+    @GetMapping("/files/{uniqueName}")
+    public ResponseEntity<?> serveFile(@PathVariable String uniqueName) {
+        try {
+            Path filePath = Paths.get(uploadDir, "assignments", uniqueName);
+            if (!Files.exists(filePath)) {
+                return ResponseEntity.status(404).body(Map.of("error", "File not found."));
+            }
+
+            // Find original name in DB if possible
+            String originalName = fileRepo.findAll().stream()
+                    .filter(f -> f.getStoredName().equals(uniqueName))
+                    .map(AssignmentFile::getOriginalName)
+                    .findFirst().orElse(uniqueName);
+
+            byte[] contents = Files.readAllBytes(filePath);
+            String contentType = Files.probeContentType(filePath);
+            if (contentType == null) contentType = "application/octet-stream";
+
+            return ResponseEntity.ok()
+                    .header("Content-Type", contentType)
+                    .header("Content-Disposition", "attachment; filename=\"" + originalName + "\"")
+                    .body(contents);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Error reading file."));
+        }
     }
 
     private String getExtension(String filename) {

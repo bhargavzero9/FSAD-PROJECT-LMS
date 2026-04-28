@@ -34,6 +34,8 @@ public class Content {
 
     private String url = "";
 
+    private Integer views = 0;
+
     @Column(name = "created_by")
     @JsonProperty("createdBy")
     private Integer createdBy;
@@ -45,6 +47,7 @@ public class Content {
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) createdAt = LocalDate.now();
+        if (views == null) views = 0;
     }
 
     public Integer getId() { return id; }
@@ -70,6 +73,9 @@ public class Content {
 
     public String getUrl() { return url; }
     public void setUrl(String url) { this.url = url; }
+
+    public Integer getViews() { return views != null ? views : 0; }
+    public void setViews(Integer views) { this.views = views; }
 
     public Integer getCreatedBy() { return createdBy; }
     public void setCreatedBy(Integer createdBy) { this.createdBy = createdBy; }

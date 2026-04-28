@@ -52,18 +52,14 @@ export function AppProvider({ children }) {
     try { return JSON.parse(localStorage.getItem('dbb_certificates')) || []; } catch { return []; }
   });
   const [messages, setMessages] = useState([]);
-  const [platformSettings, setPlatformSettings] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('dbb_platformSettings')) || {
-        contactEmail: 'admin@gmail.com', contactPhone: '9100260825',
-        aboutText: 'Welcome to Digital Black Board, the premier platform for modern learning management!',
-      };
-    } catch {
-      return { contactEmail: 'admin@gmail.com', contactPhone: '9100260825', aboutText: '' };
-    }
+  const [platformSettings, setPlatformSettings] = useState({
+    platformName: 'Digital Black Board',
+    contactEmail: 'digitalblackboardlms@gmail.com',
+    contactPhone: '9100260825',
+    aboutText: 'Welcome to Digital Black Board, the premier platform for modern learning management!',
   });
 
-  // Persist currentUser to localStorage
+  // Persist currentUser to localStorage (for auth session)
   useEffect(() => {
     if (currentUser) localStorage.setItem('dbb_currentUser', JSON.stringify(currentUser));
     else localStorage.removeItem('dbb_currentUser');
@@ -76,12 +72,11 @@ export function AppProvider({ children }) {
   useEffect(() => { localStorage.setItem('dbb_ratings', JSON.stringify(ratings)); }, [ratings]);
   useEffect(() => { localStorage.setItem('dbb_courseProgress', JSON.stringify(courseProgress)); }, [courseProgress]);
   useEffect(() => { localStorage.setItem('dbb_certificates', JSON.stringify(certificates)); }, [certificates]);
-  useEffect(() => { localStorage.setItem('dbb_platformSettings', JSON.stringify(platformSettings)); }, [platformSettings]);
 
   // ── Load data from API on mount ──────────────────────────────────────────
   const refreshData = useCallback(async () => {
     try {
-      const [usersData, coursesData, assignmentsData, submissionsData, announcementsData, contentData] =
+      const [usersData, coursesData, assignmentsData, submissionsData, announcementsData, contentData, settingsData] =
         await Promise.all([
           api.apiGetUsers().catch(() => []),
           api.apiGetCourses().catch(() => []),
@@ -89,6 +84,7 @@ export function AppProvider({ children }) {
           api.apiGetSubmissions().catch(() => []),
           api.apiGetAnnouncements().catch(() => []),
           api.apiGetContent().catch(() => []),
+          api.apiGetPlatformSettings().catch(() => null),
         ]);
       setUsers(usersData);
       setCourses(coursesData.map((c, i) => normalizeCourse(c, i)));
@@ -96,6 +92,7 @@ export function AppProvider({ children }) {
       setSubmissions(submissionsData);
       setAnnouncements(announcementsData);
       setContentItems(contentData);
+      if (settingsData) setPlatformSettings(settingsData);
     } catch (err) { console.error('Failed to load data from API:', err); }
   }, []);
 
@@ -107,7 +104,6 @@ export function AppProvider({ children }) {
         api.apiGetInbox(currentUser.id).catch(() => []),
         api.apiGetSent(currentUser.id).catch(() => []),
       ]);
-      // Merge inbox + sent, deduplicate by id
       const all = [...inbox, ...sent];
       const unique = Array.from(new Map(all.map(m => [m.id, m])).values());
       setMessages(unique);
@@ -123,9 +119,13 @@ export function AppProvider({ children }) {
     setNotifications(prev => [newNotif, ...prev]);
   };
 
-  const updatePlatformSettings = (newSettings) => {
-    setPlatformSettings(prev => ({ ...prev, ...newSettings }));
-    if (currentUser) notifyRoles(['Admin'], `⚙️ ${currentUser.name} updated the platform information.`);
+  // ── LOGIC ──────────────────────────────────────────────────────────────
+  const updatePlatformSettings = async (newSettings) => {
+    try {
+      const updated = await api.apiUpdatePlatformSettings(newSettings);
+      setPlatformSettings(updated);
+      if (currentUser) notifyRoles(['Admin'], `⚙️ ${currentUser.name} updated the platform information.`);
+    } catch (err) { console.error('Update settings error:', err); }
   };
 
   const forceReseed = () => {
@@ -142,6 +142,7 @@ export function AppProvider({ children }) {
       await refreshData();
       return { user: data.user };
     } catch (err) {
+      // Pass the specific error message from the backend (e.g., "Please verify your email")
       return { error: err.message };
     }
   };
@@ -152,10 +153,16 @@ export function AppProvider({ children }) {
       : { name: nameOrObj, email: emailArg, password: passwordArg, role: roleArg };
     try {
       const data = await api.apiRegister({ name, email, password, role });
-      setCurrentUser(data.user);
-      setUsers(prev => [...prev, data.user]);
-      notifyRoles(['Admin'], `New ${role} account created: ${name.trim()}`);
-      return { user: data.user };
+      
+      // If the backend says verification is needed, don't log in yet
+      if (data.message && (data.message.toLowerCase().includes('verify') || data.message.toLowerCase().includes('code'))) {
+        return { message: data.message };
+      } else {
+        setCurrentUser(data.user);
+        setUsers(prev => [...prev, data.user]);
+        notifyRoles(['Admin'], `New ${role} account created: ${name.trim()}`);
+        return { user: data.user };
+      }
     } catch (err) {
       return { error: err.message };
     }
@@ -485,7 +492,7 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider value={{
       // auth
-      currentUser, login, register, logout, forceReseed,
+      currentUser, setCurrentUser, login, register, logout, forceReseed,
       // users
       users, addUser, updateUser, deleteUser, updateUserAvatar, updateProfileName,
       // courses

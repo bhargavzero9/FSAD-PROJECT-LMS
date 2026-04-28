@@ -79,6 +79,26 @@ public class UserController {
         if (body.containsKey("status")) user.setStatus(body.get("status"));
         if (body.containsKey("password")) user.setPassword(body.get("password"));
         if (body.containsKey("initials")) user.setInitials(body.get("initials"));
+        if (body.containsKey("bio")) user.setBio(body.get("bio"));
+        if (body.containsKey("timezone")) user.setTimezone(body.get("timezone"));
+        if (body.containsKey("language")) user.setLanguage(body.get("language"));
+        if (body.containsKey("avatar")) user.setAvatar(body.get("avatar"));
+        
+        if (body.containsKey("nameChanged")) {
+            user.setNameChanged(Boolean.parseBoolean(body.get("nameChanged")));
+        }
+        if (body.containsKey("emailNotifications")) {
+            user.setEmailNotifications(Boolean.parseBoolean(body.get("emailNotifications")));
+        }
+        if (body.containsKey("pushNotifications")) {
+            user.setPushNotifications(Boolean.parseBoolean(body.get("pushNotifications")));
+        }
+        if (body.containsKey("weeklyReports")) {
+            user.setWeeklyReports(Boolean.parseBoolean(body.get("weeklyReports")));
+        }
+        if (body.containsKey("twoFactor")) {
+            user.setTwoFactor(Boolean.parseBoolean(body.get("twoFactor")));
+        }
 
         User saved = userRepo.save(user);
         return ResponseEntity.ok(saved);
@@ -92,6 +112,20 @@ public class UserController {
         }
         userRepo.deleteById(id);
         return ResponseEntity.ok(Map.of("message", "User deleted."));
+    }
+
+    // ── DELETE /api/users/cleanup ───────────────────────────────────────────
+    @DeleteMapping("/cleanup")
+    public ResponseEntity<?> cleanupUsers(@RequestParam(defaultValue = "5") Integer minId) {
+        List<User> users = userRepo.findAll();
+        int count = 0;
+        for (User u : users) {
+            if (u.getId() >= minId) {
+                userRepo.delete(u);
+                count++;
+            }
+        }
+        return ResponseEntity.ok(Map.of("message", "Deleted " + count + " test users."));
     }
 
     private String generateInitials(String name) {
